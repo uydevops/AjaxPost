@@ -1,0 +1,46 @@
+MODEL
+	public function get_order_amount($id)
+    {
+        $q = $this->db->get_where('sales', array('id' => $id), 1);
+        if ($q->num_rows() > 0) {
+            foreach (($q->result()) as $row) {
+                $data[] = $row;
+            }
+            return $data;
+        }
+        return FALSE;
+    }
+
+CONTROLLER 
+    public function get_gider_kategorisi_by_id($id)
+    {
+		if ($this->input->get('id')) {
+            $id = $this->input->get('id');
+        }
+	    $rows['cust'] = $this->site->get_order_amount($id);
+		$this->sma->send_json($rows);
+    }
+
+
+Interface HTML
+<script>
+$(document).on("change", '.kategori', function () {
+    var selectedValue = $(this).val();
+    $.ajax({
+        type: "get",
+        async: true, // asenkron olarak ayarlandı
+        url: site.base_url + "purchases/get_gider_kategorisi_by_id/" + selectedValue,
+        dataType: 'json',
+        success: function (result) {
+		//	alert("cccc"+result.cust[0].total);
+			if (result.cust) {
+				for (var i = 0; i < result.cust.length; i++) {
+					document.getElementById("siparis_tutari_" + satir).value = result.cust[i]['total'];
+				}
+			}
+        }
+    });
+});
+
+
+</script>
